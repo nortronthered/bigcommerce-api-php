@@ -289,8 +289,6 @@ class Connection
 
         $body = ($this->rawResponse) ? $this->getBody() : json_decode($this->getBody());
 
-        $body = (string) $body;
-
         $status = $this->getStatus();
 
         if ($this->apiRateLimitReached($status)) {
@@ -302,14 +300,14 @@ class Connection
 
         if ($status >= 400 && $status <= 499) {
             if ($this->failOnError) {
-                throw new ClientError($body, $status);
+                throw new ClientError($body->error, $status);
             } else {
                 $this->lastError = $body;
                 return false;
             }
         } elseif ($status >= 500 && $status <= 599) {
             if ($this->failOnError) {
-                throw new ServerError($body, $status);
+                throw new ServerError($body->error, $status);
             } else {
                 $this->lastError = $body;
                 return false;
