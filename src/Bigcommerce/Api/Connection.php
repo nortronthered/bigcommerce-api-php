@@ -289,6 +289,8 @@ class Connection
 
         $body = ($this->rawResponse) ? $this->getBody() : json_decode($this->getBody());
 
+        $body = (string) $body;
+
         $status = $this->getStatus();
 
         if ($this->apiRateLimitReached($status)) {
