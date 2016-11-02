@@ -300,7 +300,15 @@ class Connection
 
         if ($status >= 400 && $status <= 499) {
             if ($this->failOnError) {
-                throw new ClientError($body->error, $status);
+                switch ($status) {
+                    case 404:
+                        $error = "Resource not found";
+                        break;
+                    default:
+                        $error = $body->error;
+                        break;
+                }
+                throw new ClientError($error, $status);
             } else {
                 $this->lastError = $body;
                 return false;
