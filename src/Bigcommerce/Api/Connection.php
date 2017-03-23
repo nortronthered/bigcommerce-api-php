@@ -298,17 +298,23 @@ class Connection
             }
         }
 
+        if ($this->failOnError && empty($body)) {
+            $body = new \stdClass();
+            $body->error = "Unknown error";
+        }
+
         if ($status >= 400 && $status <= 499) {
             if ($this->failOnError) {
                 switch ($status) {
+                    case 401:
+                        $body->error = "Unauthorized";
                     case 404:
-                        $error = "Resource not found";
+                        $body->error = "Resource not found";
                         break;
                     default:
-                        $error = $body->error;
                         break;
                 }
-                throw new ClientError($error, $status);
+                throw new ClientError($body->error, $status);
             } else {
                 $this->lastError = $body;
                 return false;
