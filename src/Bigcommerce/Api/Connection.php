@@ -298,13 +298,12 @@ class Connection
             }
         }
 
-        if ($this->failOnError && empty($body)) {
-            $body = new \stdClass();
-            $body->error = "Unknown error";
-        }
-
         if ($status >= 400 && $status <= 499) {
             if ($this->failOnError) {
+                if (empty($body)) {
+                    $body = new \stdClass();
+                    $body->error = "Unknown error";
+                }
                 switch ($status) {
                     case 401:
                         $body->error = "Unauthorized";
@@ -321,6 +320,10 @@ class Connection
             }
         } elseif ($status >= 500 && $status <= 599) {
             if ($this->failOnError) {
+                if (empty($body)) {
+                    $body = new \stdClass();
+                    $body->error = "Unknown error";
+                }
                 throw new ServerError($body->error, $status);
             } else {
                 $this->lastError = $body;
